@@ -1,0 +1,205 @@
+FUNCTION_BLOCK sistemaBombeio
+
+// Define input variables
+VAR_INPUT
+	EV		: REAL; // Eficiência Volumétrica
+	NAV		: REAL; // Nível de Atendimento de Vazão
+	
+	UH		: REAL; // Grau de Utilização da Coluna de Hastes
+	CH		: REAL;	// Custo da Coluna de Hastes
+	
+	PT		: REAL;	// Peak de Torque
+	FB		: REAL; // Frequência de Bombeio
+	
+	CMax	: REAL;	// Carga Máxima
+	CMin	: REAL; // Carga Mínima
+	
+	ER		: REAL; // Exigência do Redutor
+	EE		: REAL;	// Exigência da Estrutura
+	
+	BF		: REAL; // Classificação Bomba de Fundo
+	CDH		: REAL;	// Classificação Coluna de Hastes
+	UB		: REAL; // Classificação de Bombeio
+	SB		: REAL; // Classificação do Sistema de Bombeio
+	
+END_VAR
+
+// Define output variable
+VAR_OUTPUT	
+	CSB		: REAL; // Classificação do Sistema de Bombeio
+END_VAR
+
+FUZZIFY EV 	
+	TERM Baixo	:= (0.0,0) (0.0,1) (0.5,1) (0.7,0); 
+	TERM Alto	:= (0.5,0) (0.7,1) (1.0,1) (1.0,0);
+END_FUZZIFY
+
+FUZZIFY NAV
+	TERM Baixo	:= (0.95,0) (0.95,1) (1.00,0);
+	TERM Medio	:= (0.95,0) (1.00,1) (1.50,0);
+	TERM Alto	:= (1.00,0) (1.50,1) (1.50,0);
+END_FUZZIFY
+
+DEFUZZIFY BF // Bomba de Fundo			
+	TERM Ruim	:= ( 0,0) ( 0,1) ( 25,1) ( 38, 0);
+	TERM Bom	:= (25,0) (38,1) ( 62,1) ( 75, 0);
+	TERM Otimo	:= (62,0) (75,1) (100,1) (100, 0);
+	METHOD : COG;		// Weighted Fuzzy Mean
+	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
+END_DEFUZZIFY
+
+FUZZIFY UH
+	TERM Baixo	:= (0.0,0) (0.3,1) (0.5,1) (0.9,0);
+	TERM Medio	:= (0.2,0) (0.9,1) (1.5,0);
+	TERM Alto	:= (0.9,0) (1.5,1) (2.0,1) (2.0,0);
+END_FUZZIFY
+
+FUZZIFY CH
+	TERM Baixo	:= (0.3,0) (0.3,1) (0.5,1) (0.9,0);
+	TERM Medio	:= (0.5,0) (0.9,1) (1.5,0);
+	TERM Alto	:= (0.9,0) (1.5,1) (2.0,1) (2.0,0);
+END_FUZZIFY
+
+DEFUZZIFY CDH // Coluna De Hastes			
+	TERM Ruim	:= ( 0,0) ( 0,1) ( 25,1) ( 38, 0);
+	TERM Bom	:= (25,0) (38,1) ( 62,1) ( 75, 0);
+	TERM Otimo	:= (62,0) (75,1) (100,1) (100, 0);
+	METHOD : COG;		// Weighted Fuzzy Mean
+	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
+END_DEFUZZIFY
+
+FUZZIFY PT
+	TERM Baixo	:= (0.0,0) (0.0,1) (0.4,0);
+	TERM Medio	:= (0.0,0) (0.4,1) (0.7,1) (1.0,0);
+	TERM Alto	:= (0.7,0) (1.0,1) (1.0,0);
+END_FUZZIFY
+
+FUZZIFY FB
+	TERM Baixo	:= ( 0,0) ( 0,1) ( 3,1) ( 6,0);
+	TERM Medio	:= ( 3,0) ( 6,1) (12,1) (20,0);
+	TERM Alto	:= (12,0) (20,1) (25,1) (25,0);
+END_FUZZIFY
+
+DEFUZZIFY ER // Exigência do Redutor		
+	TERM Ruim	:= ( 0,0) ( 0,1) ( 25,1) ( 38, 0);
+	TERM Bom	:= (25,0) (38,1) ( 62,1) ( 75, 0);
+	TERM Otimo	:= (62,0) (75,1) (100,1) (100, 0);
+	METHOD : COG;		// Weighted Fuzzy Mean
+	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
+END_DEFUZZIFY
+
+FUZZIFY CMax
+	TERM Baixo	:= (0.0,0) (0.0,1) (0.5,0);
+	TERM Medio	:= (0.0,0) (0.5,1) (0.7,1) (1.0,0);
+	TERM Alto	:= (0.7,0) (1.0,1) (1.0,0);
+END_FUZZIFY
+
+FUZZIFY CMin
+	TERM Baixo	:= (0.0,0) (0.0,1) (0.2,1) (0.3,0);
+	TERM Alto	:= (0.2,0) (0.3,1) (1.0,1) (1,0);	
+END_FUZZIFY
+
+DEFUZZIFY EE // Exigência da Estrutura		
+	TERM Ruim	:= ( 0,0) ( 0,1) ( 25,1) ( 38, 0);
+	TERM Bom	:= (25,0) (38,1) ( 62,1) ( 75, 0);
+	TERM Otimo	:= (62,0) (75,1) (100,1) (100, 0);
+	METHOD : COG;		// Weighted Fuzzy Mean
+	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
+END_DEFUZZIFY
+
+DEFUZZIFY UB // Unidade de Bombeio (Consolidada)	
+	TERM Ruim	:= ( 0,0) ( 0,1) ( 25,1) ( 38, 0);
+	TERM Bom	:= (25,0) (38,1) ( 62,1) ( 75, 0);
+	TERM Otimo	:= (62,0) (75,1) (100,1) (100, 0);
+	METHOD : COG;		// Weighted Fuzzy Mean
+	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
+END_DEFUZZIFY
+
+DEFUZZIFY SB // Sistema de Bombeio (Saída)
+	TERM Ruim	:= ( 0,0) ( 0,1) ( 25,1) ( 38, 0);
+	TERM Bom	:= (25,0) (38,1) ( 62,1) ( 75, 0);
+	TERM Otimo	:= (62,0) (75,1) (100,1) (100, 0);
+	METHOD : COG;		// Weighted Fuzzy Mean
+	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
+END_DEFUZZIFY
+
+RULEBLOCK ClassificacaoSistemaBombeio
+	AND : MIN;	// Use 'min' for 'and' (also implicit use 'max' for 'or' to fulfill DeMorgan's Law)
+	ACT : MIN;	// Use 'min' activation method
+	ACCU : MAX;	// Use 'max' accumulation method
+	
+	RULE   1: IF EV		IS Baixo	AND NAV	IS Baixo	THEN BF		IS Ruim	;
+	RULE   2: IF EV		IS Baixo	AND NAV	IS Medio	THEN BF		IS Ruim	;
+	RULE   3: IF EV		IS Baixo	AND NAV	IS Alto		THEN BF		IS Ruim	;
+	RULE   4: IF EV		IS Alto		AND NAV	IS Baixo	THEN BF		IS Bom	;
+	RULE   5: IF EV		IS Alto		AND NAV	IS Medio	THEN BF		IS Otimo;
+	RULE   6: IF EV		IS Alto		AND NAV	IS Alto		THEN BF		IS Bom	;
+	
+	RULE   7: IF UH		IS Baixo	AND CH	IS Baixo	THEN CDH	IS Otimo;
+	RULE   8: IF UH		IS Baixo	AND CH	IS Medio	THEN CDH	IS Bom	;
+	RULE   9: IF UH		IS Baixo	AND CH	IS Alto		THEN CDH	IS Ruim	;
+	RULE  10: IF UH		IS Medio	AND CH	IS Baixo	THEN CDH	IS Bom	;
+	RULE  11: IF UH		IS Medio	AND CH	IS Medio	THEN CDH	IS Bom	;
+	RULE  12: IF UH		IS Medio	AND CH	IS Alto		THEN CDH	IS Ruim	;
+	RULE  13: IF UH		IS Alto		AND CH	IS Baixo	THEN CDH	IS Ruim	;
+	RULE  14: IF UH		IS Alto		AND CH	IS Medio	THEN CDH	IS Ruim	;
+	RULE  15: IF UH		IS Alto		AND CH	IS Alto		THEN CDH	IS Ruim	;
+	
+	RULE  16: IF PT		IS Baixo	AND FB	IS Baixo	THEN ER		IS Bom	;
+	RULE  17: IF PT		IS Baixo	AND FB	IS Medio	THEN ER		IS Bom	;
+	RULE  18: IF PT		IS Baixo	AND FB	IS Alto		THEN ER		IS Ruim	;
+	RULE  19: IF PT		IS Medio	AND FB	IS Baixo	THEN ER		IS Bom	;
+	RULE  20: IF PT		IS Medio	AND FB	IS Medio	THEN ER		IS Otimo;
+	RULE  21: IF PT		IS Medio	AND FB	IS Alto		THEN ER		IS Ruim	;
+	RULE  22: IF PT		IS Alto		AND FB	IS Baixo	THEN ER		IS Ruim	;
+	RULE  23: IF PT		IS Alto		AND FB	IS Medio	THEN ER		IS Ruim	;
+	RULE  24: IF PT		IS Alto		AND FB	IS Alto		THEN ER		IS Ruim	;
+	
+	RULE  25: IF CMin	IS Baixo	AND CMax	IS Baixo	THEN EE		IS Ruim	;
+	RULE  26: IF CMin	IS Baixo	AND CMax	IS Medio	THEN EE		IS Ruim	;
+	RULE  27: IF CMin	IS Baixo	AND CMax	IS Alto		THEN EE		IS Ruim	;
+	RULE  28: IF CMin	IS Alto		AND CMax	IS Baixo	THEN EE		IS Bom	;
+	RULE  29: IF CMin	IS Alto		AND CMax	IS Medio	THEN EE		IS Otimo;
+	RULE  30: IF CMin	IS Alto		AND CMax	IS Alto		THEN EE		IS Ruim	;
+	
+	RULE  31: IF ER		IS Ruim		AND EE	IS Ruim		THEN UB		IS Ruim	;
+	RULE  32: IF ER		IS Ruim		AND EE	IS Bom		THEN UB		IS Ruim	;
+	RULE  33: IF ER		IS Ruim		AND EE	IS Otimo	THEN UB		IS Ruim	;
+	RULE  34: IF ER		IS Bom		AND EE	IS Ruim		THEN UB		IS Ruim	;
+	RULE  35: IF ER		IS Bom		AND EE	IS Bom		THEN UB		IS Bom	;
+	RULE  36: IF ER		IS Bom		AND EE	IS Otimo	THEN UB		IS Bom	;
+	RULE  37: IF ER		IS Otimo	AND EE	IS Ruim		THEN UB		IS Ruim	;
+	RULE  38: IF ER		IS Otimo	AND EE	IS Bom		THEN UB		IS Bom	;
+	RULE  39: IF ER		IS Otimo	AND EE	IS Otimo	THEN UB		IS Otimo;
+	
+	RULE  40: IF BF		IS Ruim		AND	UB		IS Ruim		AND CDH	IS Ruim		THEN SB		IS Ruim	;
+	RULE  41: IF BF		IS Ruim		AND	UB		IS Ruim		AND CDH	IS Bom		THEN SB		IS Ruim	;
+	RULE  42: IF BF		IS Ruim		AND	UB		IS Ruim		AND CDH	IS Otimo	THEN SB		IS Ruim	;
+	RULE  43: IF BF		IS Ruim		AND	UB		IS Bom		AND CDH	IS Ruim		THEN SB		IS Ruim	;
+	RULE  44: IF BF		IS Ruim		AND	UB		IS Bom		AND CDH	IS Bom		THEN SB		IS Bom	;
+	RULE  45: IF BF		IS Ruim		AND	UB		IS Bom		AND CDH	IS Otimo	THEN SB		IS Bom	;
+	RULE  46: IF BF		IS Ruim		AND	UB		IS Otimo	AND CDH	IS Ruim		THEN SB		IS Ruim	;
+	RULE  47: IF BF		IS Ruim		AND	UB		IS Otimo	AND CDH	IS Bom		THEN SB		IS Bom	;
+	RULE  48: IF BF		IS Ruim		AND	UB		IS Otimo	AND CDH	IS Otimo	THEN SB		IS Otimo;	
+	RULE  49: IF BF		IS Bom		AND	UB		IS Ruim		AND CDH	IS Ruim		THEN SB		IS Ruim	;
+	RULE  50: IF BF		IS Bom		AND	UB		IS Ruim		AND CDH	IS Bom		THEN SB		IS Ruim	;
+	RULE  51: IF BF		IS Bom		AND	UB		IS Ruim		AND CDH	IS Otimo	THEN SB		IS Ruim	;
+	RULE  52: IF BF		IS Bom		AND	UB		IS Bom		AND CDH	IS Ruim		THEN SB		IS Ruim	;
+	RULE  53: IF BF		IS Bom		AND	UB		IS Bom		AND CDH	IS Bom		THEN SB		IS Bom	;
+	RULE  54: IF BF		IS Bom		AND	UB		IS Bom		AND CDH	IS Otimo	THEN SB		IS Bom	;
+	RULE  55: IF BF		IS Bom		AND	UB		IS Otimo	AND CDH	IS Ruim		THEN SB		IS Ruim	;
+	RULE  56: IF BF		IS Bom		AND	UB		IS Otimo	AND CDH	IS Bom		THEN SB		IS Bom	;
+	RULE  57: IF BF		IS Bom		AND	UB		IS Otimo	AND CDH	IS Otimo	THEN SB		IS Otimo;	
+	RULE  58: IF BF		IS Otimo	AND	UB		IS Ruim		AND CDH	IS Ruim		THEN SB		IS Ruim	;
+	RULE  59: IF BF		IS Otimo	AND	UB		IS Ruim		AND CDH	IS Bom		THEN SB		IS Ruim	;
+	RULE  60: IF BF		IS Otimo	AND	UB		IS Ruim		AND CDH	IS Otimo	THEN SB		IS Ruim	;
+	RULE  61: IF BF		IS Otimo	AND	UB		IS Bom		AND CDH	IS Ruim		THEN SB		IS Ruim	;
+	RULE  62: IF BF		IS Otimo	AND	UB		IS Bom		AND CDH	IS Bom		THEN SB		IS Bom	;
+	RULE  63: IF BF		IS Otimo	AND	UB		IS Bom		AND CDH	IS Otimo	THEN SB		IS Bom	;
+	RULE  64: IF BF		IS Otimo	AND	UB		IS Otimo	AND CDH	IS Ruim		THEN SB		IS Ruim	;
+	RULE  65: IF BF		IS Otimo	AND	UB		IS Otimo	AND CDH	IS Bom		THEN SB		IS Bom	;
+	RULE  66: IF BF		IS Otimo	AND	UB		IS Otimo	AND CDH	IS Otimo	THEN SB		IS Otimo;
+	
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK
