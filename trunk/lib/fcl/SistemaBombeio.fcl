@@ -20,30 +20,29 @@ VAR_INPUT
 	BF		: REAL; // Classificação Bomba de Fundo
 	CDH		: REAL;	// Classificação Coluna de Hastes
 	UB		: REAL; // Classificação de Bombeio
-	SB		: REAL; // Classificação do Sistema de Bombeio
 	
 END_VAR
 
 // Define output variable
 VAR_OUTPUT	
-	CSB		: REAL; // Classificação do Sistema de Bombeio
+	SB		: REAL; // Classificação do Sistema de Bombeio
 END_VAR
 
 FUZZIFY EV 	
-	TERM Baixo	:= (0.0,0) (0.0,1) (0.5,1) (0.7,0); 
-	TERM Alto	:= (0.5,0) (0.7,1) (1.0,1) (1.0,0);
+	TERM Baixo	:= (0.0,1) (0.5,1) (0.7,0); 
+	TERM Alto	:= (0.5,0) (0.7,1) (1.0,1);
 END_FUZZIFY
 
 FUZZIFY NAV
-	TERM Baixo	:= (0.95,0) (0.95,1) (1.00,0);
+	TERM Baixo	:= (0.95,1) (1.00,0);
 	TERM Medio	:= (0.95,0) (1.00,1) (1.50,0);
-	TERM Alto	:= (1.00,0) (1.50,1) (1.50,0);
+	TERM Alto	:= (1.00,0) (1.50,1);
 END_FUZZIFY
 
 DEFUZZIFY BF // Bomba de Fundo			
-	TERM Ruim	:= ( 0,0) ( 0,1) ( 25,1) ( 38, 0);
+	TERM Ruim	:= ( 0,1) ( 25,1) ( 38, 0);
 	TERM Bom	:= (25,0) (38,1) ( 62,1) ( 75, 0);
-	TERM Otimo	:= (62,0) (75,1) (100,1) (100, 0);
+	TERM Otimo	:= (62,0) (75,1) (100,1);
 	METHOD : COG;		// Weighted Fuzzy Mean
 	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
 END_DEFUZZIFY
@@ -51,74 +50,74 @@ END_DEFUZZIFY
 FUZZIFY UH
 	TERM Baixo	:= (0.0,0) (0.3,1) (0.5,1) (0.9,0);
 	TERM Medio	:= (0.2,0) (0.9,1) (1.5,0);
-	TERM Alto	:= (0.9,0) (1.5,1) (2.0,1) (2.0,0);
+	TERM Alto	:= (0.9,0) (1.5,1) (2.0,1);
 END_FUZZIFY
 
 FUZZIFY CH
-	TERM Baixo	:= (0.3,0) (0.3,1) (0.5,1) (0.9,0);
+	TERM Baixo	:= (0.3,1) (0.5,1) (0.9,0);
 	TERM Medio	:= (0.5,0) (0.9,1) (1.5,0);
-	TERM Alto	:= (0.9,0) (1.5,1) (2.0,1) (2.0,0);
+	TERM Alto	:= (0.9,0) (1.5,1) (2.0,1);
 END_FUZZIFY
 
 DEFUZZIFY CDH // Coluna De Hastes			
-	TERM Ruim	:= ( 0,0) ( 0,1) ( 25,1) ( 38, 0);
+	TERM Ruim	:= ( 0,1) ( 25,1) ( 38, 0);
 	TERM Bom	:= (25,0) (38,1) ( 62,1) ( 75, 0);
-	TERM Otimo	:= (62,0) (75,1) (100,1) (100, 0);
+	TERM Otimo	:= (62,0) (75,1) (100,1);
 	METHOD : COG;		// Weighted Fuzzy Mean
 	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
 END_DEFUZZIFY
 
 FUZZIFY PT
-	TERM Baixo	:= (0.0,0) (0.0,1) (0.4,0);
+	TERM Baixo	:= (0.0,1) (0.4,0);
 	TERM Medio	:= (0.0,0) (0.4,1) (0.7,1) (1.0,0);
-	TERM Alto	:= (0.7,0) (1.0,1) (1.0,0);
+	TERM Alto	:= (0.7,0) (1.0,1);
 END_FUZZIFY
 
 FUZZIFY FB
-	TERM Baixo	:= ( 0,0) ( 0,1) ( 3,1) ( 6,0);
+	TERM Baixo	:= ( 0,1) ( 3,1) ( 6,0);
 	TERM Medio	:= ( 3,0) ( 6,1) (12,1) (20,0);
-	TERM Alto	:= (12,0) (20,1) (25,1) (25,0);
+	TERM Alto	:= (12,0) (20,1) (25,1);
 END_FUZZIFY
 
 DEFUZZIFY ER // Exigência do Redutor		
-	TERM Ruim	:= ( 0,0) ( 0,1) ( 25,1) ( 38, 0);
+	TERM Ruim	:= ( 0,1) ( 25,1) ( 38, 0);
 	TERM Bom	:= (25,0) (38,1) ( 62,1) ( 75, 0);
-	TERM Otimo	:= (62,0) (75,1) (100,1) (100, 0);
+	TERM Otimo	:= (62,0) (75,1) (100,1);
 	METHOD : COG;		// Weighted Fuzzy Mean
 	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
 END_DEFUZZIFY
 
 FUZZIFY CMax
-	TERM Baixo	:= (0.0,0) (0.0,1) (0.5,0);
+	TERM Baixo	:= (0.0,1) (0.5,0);
 	TERM Medio	:= (0.0,0) (0.5,1) (0.7,1) (1.0,0);
-	TERM Alto	:= (0.7,0) (1.0,1) (1.0,0);
+	TERM Alto	:= (0.7,0) (1.0,1);
 END_FUZZIFY
 
 FUZZIFY CMin
-	TERM Baixo	:= (0.0,0) (0.0,1) (0.2,1) (0.3,0);
-	TERM Alto	:= (0.2,0) (0.3,1) (1.0,1) (1,0);	
+	TERM Baixo	:= (0.0,1) (0.2,1) (0.3,0);
+	TERM Alto	:= (0.2,0) (0.3,1) (1.0,1);	
 END_FUZZIFY
 
 DEFUZZIFY EE // Exigência da Estrutura		
-	TERM Ruim	:= ( 0,0) ( 0,1) ( 25,1) ( 38, 0);
+	TERM Ruim	:= ( 0,1) ( 25,1) ( 38, 0);
 	TERM Bom	:= (25,0) (38,1) ( 62,1) ( 75, 0);
-	TERM Otimo	:= (62,0) (75,1) (100,1) (100, 0);
+	TERM Otimo	:= (62,0) (75,1) (100,1);
 	METHOD : COG;		// Weighted Fuzzy Mean
 	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
 END_DEFUZZIFY
 
 DEFUZZIFY UB // Unidade de Bombeio (Consolidada)	
-	TERM Ruim	:= ( 0,0) ( 0,1) ( 25,1) ( 38, 0);
+	TERM Ruim	:= ( 0,1) ( 25,1) ( 38, 0);
 	TERM Bom	:= (25,0) (38,1) ( 62,1) ( 75, 0);
-	TERM Otimo	:= (62,0) (75,1) (100,1) (100, 0);
+	TERM Otimo	:= (62,0) (75,1) (100,1);
 	METHOD : COG;		// Weighted Fuzzy Mean
 	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
 END_DEFUZZIFY
 
 DEFUZZIFY SB // Sistema de Bombeio (Saída)
-	TERM Ruim	:= ( 0,0) ( 0,1) ( 25,1) ( 38, 0);
+	TERM Ruim	:= ( 0,1) ( 25,1) ( 38, 0);
 	TERM Bom	:= (25,0) (38,1) ( 62,1) ( 75, 0);
-	TERM Otimo	:= (62,0) (75,1) (100,1) (100, 0);
+	TERM Otimo	:= (62,0) (75,1) (100,1);
 	METHOD : COG;		// Weighted Fuzzy Mean
 	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
 END_DEFUZZIFY
@@ -199,7 +198,6 @@ RULEBLOCK ClassificacaoSistemaBombeio
 	RULE  64: IF BF		IS Otimo	AND	UB		IS Otimo	AND CDH	IS Ruim		THEN SB		IS Ruim	;
 	RULE  65: IF BF		IS Otimo	AND	UB		IS Otimo	AND CDH	IS Bom		THEN SB		IS Bom	;
 	RULE  66: IF BF		IS Otimo	AND	UB		IS Otimo	AND CDH	IS Otimo	THEN SB		IS Otimo;
-	
 END_RULEBLOCK
 
 END_FUNCTION_BLOCK
